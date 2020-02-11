@@ -1,0 +1,11 @@
+  
+# Project dependencies
+.cache
+.env*
+coverage/
+node_modules/
+
+# Build directory
+/public
+/dist
+.DS_Store
