@@ -97,10 +97,31 @@ App = {
     event.preventDefault();
 
     var petId = parseInt($(event.target).data('id'));
+    var adoptionInstance; 
 
-    /*
-     * Replace me...
-     */
+    // Use web3 to get the user's accounts
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      // Select the first account
+      var account = accounts[0];
+
+      // Get the deployed contract and store an instance
+      // The gas price is free for performing computation and / or 
+      // storing data in a smart contact
+      App.contracts.Adoption.deployed().then(function(instance) {
+        adoptionInstance = instance;
+
+        // Execute adopt as a transaction by sending account
+        return adoptionInstance.adopt(petId, { from: account });
+      }).then(function(result) {
+        return App.markAdopted();
+      }).catch(function(error) {
+        console.log(err.message)
+      });
+    })
   }
 
 };
