@@ -69,9 +69,28 @@ App = {
   },
 
   markAdopted: function(adopters, account) {
-    /*
-     * Replace me...
-     */
+    var adoptionInstance;
+
+    App.contracts.Adoption.deployed().then(function(instance) {
+      adoptionInstance = instance;
+
+      // Using call() means we can read data from the blockchain without having to send
+      // a full transaction (i.e. not ETH needs to be spent)
+      return adoptionInstance.getAdopters.call();
+    }).then(function(adopters) {
+      // Loop through all the adopters to see if an address is stored for each pet
+      for (i = 0; i < adopters.length; i++) {
+        // Ethereum initializes the array with 16 x empty addresses. Hence the check for 
+        // empty address strings rather than null or a falsey value
+        if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
+          // Once a petId with corresponding address is found, disable the the button
+          // Change the button text to 'Success'
+          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true);
+        }
+      }
+    }).catch(function(err) {
+      console.log(err.message);
+    });
   },
 
   handleAdopt: function(event) {
